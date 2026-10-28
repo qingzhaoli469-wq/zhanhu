@@ -3,267 +3,214 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>浩记 · AI 密钥管家 · 终极版</title>
+<title>浩记 · AI Token Vault Pro</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0f0f1a">
 <style>
   :root {
-    --bg: #0f0f1a; --surface: #1a1a2e; --surface2: #232340; --border: #2d2d50;
-    --primary: #6c63ff; --primary-hover: #5a52e0; --primary-glow: rgba(108, 99, 255, 0.25);
-    --text: #e8e8f0; --text2: #9898b8; --danger: #ff4757; --success: #2ed573; --warning: #ffa502;
-    --radius: 12px; --shadow: 0 8px 32px rgba(0,0,0,0.35);
+    --bg: #09090e; --surface: #14141f; --surface2: #1c1c2a; --border: #27273a;
+    --primary: #5c5cff; --text: #ededed; --text2: #8a8a9e;
+    --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+    --radius: 14px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; }
   
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-  /* Buttons */
-  .btn { padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); color: var(--text); cursor: pointer; font-size: 13px; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
-  .btn:active { transform: scale(0.96); }
+  /* UI 元素 */
+  .btn { padding: 10px 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface2); color: var(--text); font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s; }
+  .btn:active { transform: scale(0.97); opacity: 0.8; }
   .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
-  .btn-danger { border-color: rgba(255,71,87,0.3); color: var(--danger); }
-  .btn-success { border-color: rgba(46,213,115,0.3); color: var(--success); }
-  .btn-sm { padding: 6px 12px; font-size: 12px; }
-  .btn-icon { width: 32px; height: 32px; padding: 0; border-radius: 50%; }
-
-  /* Layout */
-  .header { background: rgba(26,26,46,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; }
-  .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), #a855f7); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .btn-danger { border-color: rgba(239,68,68,0.4); color: var(--danger); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
   
-  .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+  .header { padding: 16px; background: rgba(20,20,31,0.85); backdrop-filter: blur(16px); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+  .logo { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px; }
+  .logo-icon { width: 28px; height: 28px; background: linear-gradient(135deg, #5c5cff, #a855f7); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
   
-  /* Stats */
-  .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; text-align: center; }
-  .stat-card .num { font-size: 22px; font-weight: 700; background: linear-gradient(135deg, var(--primary), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .stat-card .label { font-size: 11px; color: var(--text2); }
+  /* 仪表盘 */
+  .dashboard { padding: 16px; max-width: 800px; margin: 0 auto; }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .stat-box { background: var(--surface); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+  .stat-box .label { font-size: 12px; color: var(--text2); }
+  .stat-box .val { font-size: 24px; font-weight: 700; font-family: monospace; }
+  .val.cny { color: var(--success); }
+  .val.usd { color: #60a5fa; }
+  .val.warn { color: var(--danger); }
 
-  /* Toolbar */
-  .toolbar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-  .search-row { display: flex; gap: 8px; }
-  .search-box { flex: 1; position: relative; }
-  .search-box input { width: 100%; padding: 10px 14px 10px 36px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; outline: none; }
-  .search-box .icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text2); font-size: 14px; }
+  /* 工具栏 */
+  .toolbar { display: flex; gap: 8px; margin-bottom: 16px; }
+  .search-input { flex: 1; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; outline: none; transition: border 0.2s; }
+  .search-input:focus { border-color: var(--primary); }
+
+  /* 站点卡片 */
+  .site-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; position: relative; overflow: hidden; }
+  .site-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .site-name { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .status-dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
+  .status-dot.error { background: var(--danger); }
+  .status-dot.unknown { background: var(--text2); }
+  .tag { padding: 2px 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; color: var(--text2); }
   
-  .filter-scroll { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
-  .filter-scroll::-webkit-scrollbar { display: none; }
-  .filter-btn { padding: 6px 14px; border: 1px solid var(--border); border-radius: 20px; background: transparent; color: var(--text2); cursor: pointer; font-size: 12px; white-space: nowrap; }
-  .filter-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .key-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg); padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); }
+  .key-text { font-family: monospace; font-size: 13px; color: var(--text); letter-spacing: 0.5px; }
+  .balance-info { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13px; }
+  .balance-amount { font-family: monospace; font-weight: 600; font-size: 16px; }
 
-  /* Cards */
-  .vault-grid { display: flex; flex-direction: column; gap: 12px; }
-  .key-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; position: relative; }
-  .key-card .top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-  .key-card .platform { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .key-card .actions { display: flex; gap: 6px; }
-  .key-value-box { display: flex; align-items: center; gap: 8px; background: var(--bg); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 8px; }
-  .key-value { font-family: 'SF Mono', monospace; font-size: 13px; color: var(--text); word-break: break-all; flex: 1; transition: filter 0.3s; }
-  .key-value.hidden { filter: blur(4px); user-select: none; }
-  .key-card .meta { display: flex; gap: 12px; font-size: 12px; color: var(--text2); flex-wrap: wrap; align-items: center; }
-  .tag { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 500; background: rgba(108,99,255,0.15); color: var(--primary); }
-  
-  /* Empty State */
-  .empty-state { text-align: center; padding: 40px 20px; color: var(--text2); }
-  .empty-state .big-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.5; }
-
-  /* Modals */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 999; align-items: flex-end; justify-content: center; }
+  /* 弹窗 */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 999; align-items: flex-end; justify-content: center; }
   @media (min-width: 600px) { .modal-overlay { align-items: center; } }
   .modal-overlay.show { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px 20px 0 0; padding: 24px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s ease; }
-  @media (min-width: 600px) { .modal { border-radius: 16px; } }
-  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 24px 24px 0 0; padding: 24px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+  @media (min-width: 600px) { .modal { border-radius: 20px; } }
   
+  /* 表单 */
   .form-group { margin-bottom: 16px; }
-  .form-group label { display: block; font-size: 13px; color: var(--text2); margin-bottom: 6px; }
-  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 15px; outline: none; }
-  .form-group textarea { min-height: 80px; resize: vertical; }
-  .input-with-icon { position: relative; }
-  .input-with-icon input { padding-right: 40px; }
-  .input-with-icon .eye { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text2); padding: 4px; }
-
-  /* Lock Screen */
-  .lock-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-  .lock-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px 24px; width: 100%; max-width: 380px; text-align: center; box-shadow: var(--shadow); }
-  .lock-card .lock-icon { font-size: 48px; margin-bottom: 16px; }
-  .lock-card h1 { font-size: 22px; margin-bottom: 8px; }
-  .lock-card p { color: var(--text2); font-size: 13px; margin-bottom: 24px; }
-
-  /* Toast */
-  .toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; width: 90%; max-width: 300px; }
-  .toast { padding: 12px 16px; border-radius: 8px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 13px; box-shadow: var(--shadow); animation: fadeIn 0.3s; display: flex; align-items: center; gap: 8px; }
-  .toast.success { border-left: 3px solid var(--success); }
-  .toast.error { border-left: 3px solid var(--danger); }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .form-group label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 500; }
+  .form-control { width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; outline: none; }
+  .form-control:focus { border-color: var(--primary); }
   
+  /* 锁屏 */
+  .lock-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+  .lock-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  
+  .toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 300px; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+  .toast { padding: 12px 16px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 13px; text-align: center; animation: slideUp 0.3s; }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   .hidden { display: none !important; }
+  
+  /* 加载动画 */
+  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<!-- 强制注销旧版 Service Worker (防止旧代码缓存) -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-      for(let registration of registrations) { registration.unregister(); }
-    });
-  }
-</script>
-
-<!-- 锁屏界面 -->
+<!-- 锁屏 -->
 <div class="lock-screen" id="lockScreen">
-  <div class="lock-card" id="unlockCard">
-    <div class="lock-icon">🔐</div>
-    <h1>浩记 · 密钥管家</h1>
-    <p>本地加密 · 你的数据只属于你</p>
-    <div class="form-group" style="margin-bottom:12px;">
-      <div class="input-with-icon">
-        <input type="password" id="masterPwd" placeholder="输入主密码" onkeydown="if(event.key==='Enter') unlock()">
-        <span class="eye" onclick="togglePwd('masterPwd', this)">👁️</span>
-      </div>
-    </div>
-    <button class="btn btn-primary" style="width:100%; padding:12px;" onclick="unlock()">解锁</button>
-    <div style="margin-top:16px; font-size:12px; color:var(--text2);">
-      没有保险箱？<a href="#" onclick="showCreate()" style="color:var(--primary);">立即创建</a>
-    </div>
+  <div class="lock-card" id="unlockView">
+    <div style="font-size: 48px; margin-bottom: 16px;">🔐</div>
+    <h1 style="font-size: 22px; margin-bottom: 8px;">浩记 · Token Vault</h1>
+    <p style="color: var(--text2); font-size: 13px; margin-bottom: 24px;">本地优先 · 加密存储 · 强隔离</p>
+    <div class="form-group"><input type="password" id="masterPwd" class="form-control" placeholder="输入主密码" onkeydown="if(event.key==='Enter') unlock()"></div>
+    <button class="btn btn-primary" style="width: 100%; padding: 12px;" onclick="unlock()">解锁</button>
+    <div style="margin-top: 16px; font-size: 12px; color: var(--text2);">没有保险箱？<a href="#" onclick="showCreate()" style="color: var(--primary); text-decoration: none;">立即创建</a></div>
   </div>
-
-  <div class="lock-card hidden" id="createCard">
-    <div class="lock-icon">🛡️</div>
-    <h1>创建保险箱</h1>
-    <p>设置主密码，用于本地加密数据。密码丢失将无法找回！</p>
-    <div class="form-group">
-      <div class="input-with-icon">
-        <input type="password" id="newPwd" placeholder="设置主密码" oninput="checkStrength(this.value)">
-        <span class="eye" onclick="togglePwd('newPwd', this)">👁️</span>
-      </div>
-      <div style="height:4px; background:var(--border); border-radius:2px; margin-top:8px; overflow:hidden;">
-        <div id="strengthBar" style="height:100%; width:0; transition:0.3s;"></div>
-      </div>
-    </div>
-    <div class="form-group">
-      <input type="password" id="confirmPwd" placeholder="再次输入主密码">
-    </div>
-    <button class="btn btn-primary" style="width:100%; padding:12px;" onclick="create()">创建并进入</button>
-    <div style="margin-top:16px; font-size:12px;">
-      <a href="#" onclick="hideCreate()" style="color:var(--text2);">返回解锁</a>
-    </div>
+  
+  <div class="lock-card hidden" id="createView">
+    <div style="font-size: 48px; margin-bottom: 16px;">🛡️</div>
+    <h1 style="font-size: 22px; margin-bottom: 8px;">创建保险箱</h1>
+    <p style="color: var(--text2); font-size: 13px; margin-bottom: 24px;">密码用于加密所有数据，遗忘不可找回</p>
+    <div class="form-group"><input type="password" id="newPwd" class="form-control" placeholder="设置主密码"></div>
+    <div class="form-group"><input type="password" id="confirmPwd" class="form-control" placeholder="确认主密码"></div>
+    <button class="btn btn-primary" style="width: 100%; padding: 12px;" onclick="createVault()">创建并进入</button>
+    <div style="margin-top: 16px; font-size: 12px;"><a href="#" onclick="hideCreate()" style="color: var(--text2); text-decoration: none;">返回解锁</a></div>
   </div>
 </div>
 
 <!-- 主应用 -->
-<div id="app" class="hidden">
+<div id="mainApp" class="hidden">
   <div class="header">
-    <div class="logo">
-      <div class="logo-icon">🔑</div>
-      <div>密钥管家</div>
-    </div>
-    <div style="display:flex; gap:8px;">
-      <button class="btn btn-sm" onclick="exportData()">📦 导出</button>
-      <button class="btn btn-sm" onclick="document.getElementById('importFile').click()">📥 导入</button>
-      <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
-      <button class="btn btn-sm btn-danger" onclick="lock()">锁定</button>
+    <div class="logo"><div class="logo-icon">⚡</div>Token Vault Pro</div>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-sm" onclick="exportVault()">导出</button>
+      <button class="btn btn-sm btn-primary" onclick="lockVault()">锁定</button>
     </div>
   </div>
 
-  <div class="container">
-    <div class="stats-bar">
-      <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">密钥总数</div></div>
-      <div class="stat-card"><div class="num" id="statPlatforms">0</div><div class="label">平台数</div></div>
-      <div class="stat-card"><div class="num" id="statTested">0</div><div class="label">已测试</div></div>
-    </div>
-
-    <div class="toolbar">
-      <div class="search-row">
-        <div class="search-box">
-          <span class="icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="搜索平台或备注..." oninput="render()">
+  <div class="dashboard">
+    <!-- 仪表盘 -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <span class="label">CNY 余额合计</span>
+        <span class="val cny" id="totalCny">¥0.00</span>
+      </div>
+      <div class="stat-box">
+        <span class="label">USD 余额合计</span>
+        <span class="val usd" id="totalUsd">$0.00</span>
+      </div>
+      <div class="stat-box" style="grid-column: span 2; flex-direction: row; justify-content: space-between; align-items: center;">
+        <div>
+          <span class="label">站点监控</span>
+          <span class="val" style="font-size: 18px;" id="siteCount">0 个站点</span>
         </div>
-        <button class="btn btn-primary" onclick="openModal()">＋ 添加</button>
-      </div>
-      <div class="filter-scroll">
-        <button class="filter-btn active" onclick="setFilter(this,'')">全部</button>
-        <button class="filter-btn" onclick="setFilter(this,'general')">通用</button>
-        <button class="filter-btn" onclick="setFilter(this,'coding')">编程</button>
-        <button class="filter-btn" onclick="setFilter(this,'drawing')">绘图</button>
-        <button class="filter-btn" onclick="setFilter(this,'work')">工作</button>
-        <button class="filter-btn" onclick="setFilter(this,'other')">其他</button>
+        <button class="btn btn-primary" onclick="refreshAllBalances()" id="refreshBtn">刷新全部余额</button>
       </div>
     </div>
 
-    <div class="vault-grid" id="grid"></div>
+    <!-- 工具栏 -->
+    <div class="toolbar">
+      <input type="text" id="searchInput" class="search-input" placeholder="搜索站点名称..." oninput="renderList()">
+      <button class="btn btn-primary" onclick="openModal()" style="white-space: nowrap;">＋ 添加站点</button>
+    </div>
+
+    <!-- 列表 -->
+    <div id="siteList"></div>
   </div>
 </div>
 
 <!-- 添加/编辑弹窗 -->
-<div class="modal-overlay" id="keyModal">
+<div class="modal-overlay" id="editModal">
   <div class="modal">
-    <h2 id="modalTitle" style="margin-bottom:20px;">添加密钥</h2>
+    <h2 style="margin-bottom: 20px; font-size: 18px;" id="modalTitle">配置站点</h2>
+    
     <div class="form-group">
-      <label>平台名称 *</label>
-      <input type="text" id="inPlatform" placeholder="如 OpenAI, Claude">
+      <label>站点名称</label>
+      <input type="text" id="fName" class="form-control" placeholder="如 DeepSeek, OpenRouter">
     </div>
     <div class="form-group">
-      <label>API Key *</label>
-      <input type="text" id="inKey" placeholder="sk-...">
+      <label>API Key</label>
+      <input type="password" id="fKey" class="form-control" placeholder="sk-...">
     </div>
     <div class="form-group">
-      <label>Base URL (可选)</label>
-      <input type="text" id="inBaseUrl" placeholder="https://api.openai.com/v1">
-    </div>
-    <div class="form-group">
-      <label>分组</label>
-      <select id="inGroup">
-        <option value="general">通用</option>
-        <option value="coding">编程</option>
-        <option value="drawing">绘图</option>
-        <option value="work">工作</option>
-        <option value="other">其他</option>
+      <label>平台类型 (用于自动识别余额接口)</label>
+      <select id="fProvider" class="form-control">
+        <option value="auto">自动识别</option>
+        <option value="deepseek">DeepSeek 官方</option>
+        <option value="openrouter">OpenRouter</option>
+        <option value="moonshot">Moonshot / Kimi</option>
+        <option value="siliconflow">SiliconFlow 硅基流动</option>
+        <option value="newapi">中转站 / new-api</option>
       </select>
     </div>
     <div class="form-group">
-      <label>备注 (可选)</label>
-      <textarea id="inNote" placeholder="用途、到期日等"></textarea>
+      <label>自定义 Base URL (选填)</label>
+      <input type="text" id="fBaseUrl" class="form-control" placeholder="https://api.example.com">
     </div>
-    <div style="display:flex; gap:10px; margin-top:24px;">
-      <button class="btn" style="flex:1;" onclick="closeModal('keyModal')">取消</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveKey()">保存</button>
-    </div>
-  </div>
-</div>
+    
+    <!-- 高级设置 -->
+    <details style="margin-bottom: 20px; background: var(--surface2); padding: 12px; border-radius: 10px; border: 1px solid var(--border);">
+      <summary style="font-size: 13px; color: var(--primary); cursor: pointer; font-weight: 500;">高级：自定义 JSON 解析规则 (无需写代码)</summary>
+      <div style="margin-top: 12px;">
+        <div class="form-group">
+          <label>余额字段路径 (如 data.balance)</label>
+          <input type="text" id="fJsonPath" class="form-control" placeholder="留空则使用平台默认接口">
+        </div>
+        <div class="form-group">
+          <label>币种</label>
+          <select id="fCurrency" class="form-control">
+            <option value="CNY">人民币 CNY</option>
+            <option value="USD">美元 USD</option>
+          </select>
+        </div>
+      </div>
+    </details>
 
-<!-- 测试结果弹窗 -->
-<div class="modal-overlay" id="testModal">
-  <div class="modal">
-    <h2 style="margin-bottom:16px;">连通性测试</h2>
-    <div id="testResultBox" style="margin-bottom:20px; font-size:14px;"></div>
-    <button class="btn btn-primary" style="width:100%;" onclick="closeModal('testModal')">关闭</button>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn" style="flex: 1;" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" style="flex: 1;" onclick="saveSite()">保存配置</button>
+    </div>
   </div>
 </div>
 
 <div class="toast-container" id="toastBox"></div>
 
 <script>
-// ================= 动态 PWA Manifest 注入 =================
-const manifest = {
-  "name": "浩记密钥管家", "short_name": "密钥管家", "start_url": "./", "display": "standalone",
-  "background_color": "#0f0f1a", "theme_color": "#0f0f1a",
-  "icons": [{ "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIwIiBmaWxsPSIjNmM2M2ZmIi8+PGNpcmNsZSBjeD0iMzAiIGN5PSI1MCIgcj0iMTIiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTQwIDUwaDMwdjEwaC0xMFY1MEg0MHoiIGZpbGw9IndoaXRlIi8+PC9zdmc+", "sizes": "192x192", "type": "image/svg+xml" }]
-};
-const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-const manifestUrl = URL.createObjectURL(manifestBlob);
-document.write(`<link rel="manifest" href="${manifestUrl}">`);
-
-// ================= 加密核心 =================
+// ================= 基础加密与存储 =================
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 
-async function getKey(password, salt) {
+async function getCryptoKey(password, salt) {
   const km = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey(
     { name: 'PBKDF2', salt, iterations: 350000, hash: 'SHA-256' },
@@ -271,280 +218,318 @@ async function getKey(password, salt) {
   );
 }
 
-async function encrypt(text, pwd) {
+async function encryptStr(text, pwd) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const key = await getKey(pwd, salt);
+  const key = await getCryptoKey(pwd, salt);
   const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
   const buf = new Uint8Array(16 + 12 + cipher.byteLength);
   buf.set(salt, 0); buf.set(iv, 16); buf.set(new Uint8Array(cipher), 28);
   return btoa(String.fromCharCode(...buf));
 }
 
-async function decrypt(b64, pwd) {
-  try {
-    const buf = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-    const key = await getKey(pwd, buf.slice(0, 16));
-    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: buf.slice(16, 28) }, key, buf.slice(28));
-    return dec.decode(plain);
-  } catch { throw new Error('密码错误'); }
+async function decryptStr(b64, pwd) {
+  const buf = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const key = await getCryptoKey(pwd, buf.slice(0, 16));
+  const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: buf.slice(16, 28) }, key, buf.slice(28));
+  return dec.decode(plain);
 }
 
-// ================= 状态管理 =================
-let state = { pwd: '', keys: [], editId: null, filter: '' };
+let appState = { pwd: '', sites: [], editId: null };
 
-// ================= 锁屏逻辑 =================
-function showCreate() {
-  document.getElementById('unlockCard').classList.add('hidden');
-  document.getElementById('createCard').classList.remove('hidden');
-}
-function hideCreate() {
-  document.getElementById('createCard').classList.add('hidden');
-  document.getElementById('unlockCard').classList.remove('hidden');
-}
-function togglePwd(id, el) {
-  const input = document.getElementById(id);
-  if (input.type === 'password') { input.type = 'text'; el.textContent = '🙈'; }
-  else { input.type = 'password'; el.textContent = '👁️'; }
-}
-function checkStrength(v) {
-  let s = 0;
-  if(v.length >= 8) s+=30; if(v.length >= 12) s+=20;
-  if(/[A-Z]/.test(v) && /[a-z]/.test(v)) s+=20; if(/\d/.test(v)) s+=15; if(/[^A-Za-z0-9]/.test(v)) s+=15;
-  const bar = document.getElementById('strengthBar');
-  bar.style.width = Math.min(s, 100) + '%';
-  bar.style.background = s < 40 ? 'var(--danger)' : s < 70 ? 'var(--warning)' : 'var(--success)';
-}
+// ================= 状态控制 =================
+window.onload = () => {
+  if (!localStorage.getItem('haoji_vault_pro')) showCreate();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => { for(let reg of regs) reg.unregister(); });
+  }
+};
 
-async function create() {
+function showCreate() { document.getElementById('unlockView').classList.add('hidden'); document.getElementById('createView').classList.remove('hidden'); }
+function hideCreate() { document.getElementById('createView').classList.add('hidden'); document.getElementById('unlockView').classList.remove('hidden'); }
+
+async function createVault() {
   const pwd = document.getElementById('newPwd').value;
-  const confirm = document.getElementById('confirmPwd').value;
-  if (pwd.length < 6) return toast('密码至少 6 位', 'error');
-  if (pwd !== confirm) return toast('两次密码不一致', 'error');
-  state.pwd = pwd; state.keys = [];
-  await save();
-  enterApp();
-  toast('创建成功', 'success');
+  if (pwd.length < 6) return toast('密码至少 6 位');
+  if (pwd !== document.getElementById('confirmPwd').value) return toast('两次密码不一致');
+  appState.pwd = pwd; appState.sites = [];
+  await saveState(); enterApp();
 }
 
 async function unlock() {
   const pwd = document.getElementById('masterPwd').value;
-  if (!pwd) return toast('请输入密码', 'error');
-  const data = localStorage.getItem('haoji_vault');
-  if (!data) return toast('保险箱不存在，请先创建', 'error');
+  const data = localStorage.getItem('haoji_vault_pro');
+  if (!data) return toast('保险箱不存在');
   try {
-    const str = await decrypt(data, pwd);
-    state.pwd = pwd;
-    state.keys = JSON.parse(str);
-    enterApp();
-  } catch { toast('密码错误', 'error'); }
+    const str = await decryptStr(data, pwd);
+    appState.sites = JSON.parse(str);
+    appState.pwd = pwd; enterApp();
+  } catch { toast('密码错误'); }
 }
 
 function enterApp() {
   document.getElementById('lockScreen').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
-  document.getElementById('masterPwd').value = '';
-  render();
+  document.getElementById('mainApp').classList.remove('hidden');
+  renderList(); refreshAllBalances();
 }
 
-function lock() {
-  state.pwd = ''; state.keys = [];
-  document.getElementById('app').classList.add('hidden');
+function lockVault() {
+  appState.pwd = ''; appState.sites = [];
+  document.getElementById('mainApp').classList.add('hidden');
   document.getElementById('lockScreen').classList.remove('hidden');
   hideCreate();
 }
 
-async function save() {
-  if (!state.pwd) return;
-  const data = await encrypt(JSON.stringify(state.keys), state.pwd);
-  localStorage.setItem('haoji_vault', data);
+async function saveState() {
+  if (!appState.pwd) return;
+  const encrypted = await encryptStr(JSON.stringify(appState.sites), appState.pwd);
+  localStorage.setItem('haoji_vault_pro', encrypted);
 }
 
-// ================= 业务渲染 =================
-function escape(str) { return str.replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+// ================= 跨域代理与余额接口适配 =================
+// 提供多个公共代理进行容灾
+const PROXIES = [
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+];
 
-function render() {
+async function fetchWithProxy(targetUrl, headers) {
+  for (let proxyFn of PROXIES) {
+    try {
+      const res = await fetch(proxyFn(targetUrl), { headers });
+      if (res.ok) return await res.json();
+    } catch(e) { continue; }
+  }
+  throw new Error('所有代理节点超时或受限');
+}
+
+async function queryBalance(site) {
+  const provider = site.provider;
+  let url = '';
+  let headers = { 'Authorization': `Bearer ${site.key}`, 'Accept': 'application/json' };
+
+  // 1. 确定请求的 API 接口
+  if (site.jsonPath && site.baseUrl) {
+    url = site.baseUrl.replace(/\/+$/, '') + (site.jsonPath.startsWith('/') ? '' : '/') + site.jsonPath;
+  } else {
+    switch (provider) {
+      case 'deepseek':
+        url = 'https://api.deepseek.com/user/balance'; break;
+      case 'openrouter':
+        url = 'https://openrouter.ai/api/v1/credits'; break;
+      case 'moonshot':
+        url = 'https://api.moonshot.cn/v1/users/me/balance'; break;
+      case 'siliconflow':
+        url = 'https://api.siliconflow.cn/v1/user/info'; break;
+      case 'newapi':
+        url = (site.baseUrl || 'https://api.openai.com').replace(/\/+$/, '') + '/dashboard/billing/credit_grants';
+        break;
+      default: // auto
+        if (site.key.startsWith('sk-or-')) { url = 'https://openrouter.ai/api/v1/credits'; site.provider = 'openrouter'; }
+        else if (site.key.startsWith('sk-proj') || site.key.startsWith('sk-ant')) throw new Error('官方默认不开放余额接口');
+        else { url = 'https://api.deepseek.com/user/balance'; site.provider = 'deepseek'; }
+    }
+  }
+
+  // 2. 发起请求
+  const data = await fetchWithProxy(url, headers);
+
+  // 3. 解析字段
+  let balance = 0;
+  let currency = site.currency || 'CNY';
+
+  try {
+    if (provider === 'deepseek') {
+      balance = parseFloat(data.balance_infos[0].total_balance);
+      currency = data.balance_infos[0].currency;
+    } else if (provider === 'openrouter') {
+      balance = (data.data.total_credits || 0) - (data.data.total_usage || 0);
+      currency = 'USD';
+    } else if (provider === 'moonshot') {
+      balance = parseFloat(data.data.available_balance);
+    } else if (provider === 'siliconflow') {
+      balance = parseFloat(data.data.totalBalance);
+    } else if (provider === 'newapi') {
+      // new-api 通常返回总额度，这里做简单兼容
+      balance = data.data ? parseFloat(data.data.total_available) : 0;
+    } else if (site.jsonPath && data) {
+      // 极简路径解析器 (支持 a.b.c 格式)
+      const pathArr = site.jsonPath.split('.');
+      let cur = data;
+      for (let p of pathArr) { cur = cur[p]; }
+      balance = parseFloat(cur);
+    }
+  } catch(e) {
+    throw new Error('返回数据格式不符');
+  }
+
+  if (isNaN(balance)) throw new Error('解析出的余额非数字');
+  return { balance, currency, rawData: data };
+}
+
+// ================= 刷新与渲染 =================
+async function refreshAllBalances() {
+  const btn = document.getElementById('refreshBtn');
+  btn.innerHTML = '<span class="spinner"></span> 查询中';
+  btn.disabled = true;
+
+  let totalCny = 0; let totalUsd = 0;
+
+  for (let site of appState.sites) {
+    try {
+      const res = await queryBalance(site);
+      site.balance = res.balance;
+      site.currency = res.currency;
+      site.status = 'active';
+      
+      if (res.currency === 'CNY') totalCny += res.balance;
+      if (res.currency === 'USD') totalUsd += res.balance;
+    } catch (err) {
+      site.balance = null;
+      site.status = 'error';
+      site.errMsg = err.message;
+    }
+  }
+  
+  document.getElementById('totalCny').textContent = `¥${totalCny.toFixed(2)}`;
+  document.getElementById('totalUsd').textContent = `$${totalUsd.toFixed(2)}`;
+  document.getElementById('siteCount').textContent = `${appState.sites.length} 个站点`;
+  
+  await saveState();
+  renderList();
+  
+  btn.innerHTML = '刷新全部余额';
+  btn.disabled = false;
+}
+
+function renderList() {
   const q = document.getElementById('searchInput').value.toLowerCase();
-  let list = state.keys.filter(k => {
-    if (state.filter && k.group !== state.filter) return false;
-    if (q && !k.platform.toLowerCase().includes(q) && !k.note.toLowerCase().includes(q)) return false;
-    return true;
-  });
-
-  document.getElementById('statTotal').textContent = state.keys.length;
-  document.getElementById('statPlatforms').textContent = new Set(state.keys.map(k=>k.platform)).size;
-  document.getElementById('statTested').textContent = state.keys.filter(k=>k.tested).length;
-
-  const grid = document.getElementById('grid');
+  const list = appState.sites.filter(s => s.name.toLowerCase().includes(q));
+  const container = document.getElementById('siteList');
+  
   if (list.length === 0) {
-    grid.innerHTML = `<div class="empty-state"><div class="big-icon">🔒</div><p>暂无数据</p></div>`;
+    container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text2);">暂无站点数据</div>';
     return;
   }
 
-  grid.innerHTML = list.map(k => `
-    <div class="key-card">
-      <div class="top-row">
-        <div class="platform">${escape(k.platform)} <span class="tag">${k.group}</span></div>
-        <div class="actions">
-          <button class="btn btn-sm btn-icon" onclick="openModal('${k.id}')">✏️</button>
-          <button class="btn btn-sm btn-icon btn-success" onclick="testKey('${k.id}')">🧪</button>
-          <button class="btn btn-sm btn-icon btn-danger" onclick="delKey('${k.id}')">🗑️</button>
+  container.innerHTML = list.map(site => {
+    let statusClass = 'unknown';
+    if (site.status === 'active') statusClass = 'active';
+    if (site.status === 'error') statusClass = 'error';
+
+    let balanceHtml = '<span style="color: var(--text2); font-size: 13px;">未查询</span>';
+    if (site.status === 'error') balanceHtml = `<span style="color: var(--danger); font-size: 12px;">查询失败</span>`;
+    else if (site.balance !== undefined && site.balance !== null) {
+      const symbol = site.currency === 'USD' ? '$' : '¥';
+      // 低余额预警 (少于 10 元提示红色)
+      const color = site.balance < 10 ? 'var(--warning)' : 'var(--success)';
+      balanceHtml = `<span style="color: ${color}; font-family: monospace; font-weight: bold; font-size: 16px;">${symbol} ${site.balance.toFixed(2)}</span>`;
+    }
+
+    return `
+    <div class="site-card">
+      <div class="site-header">
+        <div class="site-name">
+          <span class="status-dot ${statusClass}"></span>
+          ${escapeHtml(site.name)}
+          <span class="tag">${site.provider}</span>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn btn-sm" onclick="openModal('${site.id}')">✏️</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteSite('${site.id}')">🗑️</button>
         </div>
       </div>
-      <div class="key-value-box">
-        <span class="key-value hidden" id="kv-${k.id}" onclick="toggleReveal('${k.id}')">${escape(k.key)}</span>
-        <button class="btn btn-sm" onclick="copyText('${escape(k.key)}')">复制</button>
+      <div class="key-row">
+        <span class="key-text">${maskKey(site.key)}</span>
+        <button class="btn btn-sm" onclick="copyText('${escapeHtml(site.key)}')">复制</button>
       </div>
-      ${k.baseUrl ? `<div style="font-size:12px;color:var(--text2);margin-bottom:8px;">🌐 ${escape(k.baseUrl)}</div>` : ''}
-      <div class="meta">
-        <span>${k.tested ? '<span style="color:var(--success)">● 已验证</span>' : '<span style="color:var(--text2)">○ 未测试</span>'}</span>
-        ${k.note ? `<span>💬 ${escape(k.note)}</span>` : ''}
+      <div class="balance-info">
+        <span style="color: var(--text2);">当前余额</span>
+        <div>${balanceHtml}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
-function toggleReveal(id) { document.getElementById('kv-'+id).classList.toggle('hidden'); }
-function setFilter(btn, f) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  state.filter = f; render();
-}
-
-// ================= 增删改查 =================
+// ================= 站点管理 =================
 function openModal(id = null) {
-  state.editId = id;
-  const k = id ? state.keys.find(x => x.id === id) : { platform:'', key:'', baseUrl:'', group:'general', note:'' };
-  document.getElementById('modalTitle').textContent = id ? '编辑密钥' : '添加密钥';
-  document.getElementById('inPlatform').value = k.platform;
-  document.getElementById('inKey').value = k.key;
-  document.getElementById('inBaseUrl').value = k.baseUrl || '';
-  document.getElementById('inGroup').value = k.group;
-  document.getElementById('inNote').value = k.note || '';
-  document.getElementById('keyModal').classList.add('show');
+  appState.editId = id;
+  const site = id ? appState.sites.find(s => s.id === id) : { name:'', key:'', provider:'auto', baseUrl:'', jsonPath:'', currency:'CNY' };
+  document.getElementById('modalTitle').textContent = id ? '编辑站点' : '添加站点';
+  document.getElementById('fName').value = site.name;
+  document.getElementById('fKey').value = site.key;
+  document.getElementById('fProvider').value = site.provider;
+  document.getElementById('fBaseUrl').value = site.baseUrl || '';
+  document.getElementById('fJsonPath').value = site.jsonPath || '';
+  document.getElementById('fCurrency').value = site.currency || 'CNY';
+  document.getElementById('editModal').classList.add('show');
 }
 
-async function saveKey() {
-  const platform = document.getElementById('inPlatform').value.trim();
-  const key = document.getElementById('inKey').value.trim();
-  if (!platform || !key) return toast('平台和Key不能为空', 'error');
-  
+async function saveSite() {
+  const name = document.getElementById('fName').value.trim();
+  const key = document.getElementById('fKey').value.trim();
+  if (!name || !key) return toast('名称和 Key 不能为空');
+
   const entry = {
-    id: state.editId || Date.now().toString(36),
-    platform, key,
-    baseUrl: document.getElementById('inBaseUrl').value.trim(),
-    group: document.getElementById('inGroup').value,
-    note: document.getElementById('inNote').value.trim(),
-    tested: state.editId ? state.keys.find(x=>x.id===state.editId).tested : false
+    id: appState.editId || Date.now().toString(36),
+    name, key,
+    provider: document.getElementById('fProvider').value,
+    baseUrl: document.getElementById('fBaseUrl').value.trim(),
+    jsonPath: document.getElementById('fJsonPath').value.trim(),
+    currency: document.getElementById('fCurrency').value,
+    status: 'unknown', balance: null
   };
 
-  if (state.editId) {
-    const i = state.keys.findIndex(x => x.id === state.editId);
-    state.keys[i] = entry;
+  if (appState.editId) {
+    const i = appState.sites.findIndex(s => s.id === appState.editId);
+    appState.sites[i] = { ...appState.sites[i], ...entry };
   } else {
-    state.keys.unshift(entry);
-  }
-  await save(); closeModal('keyModal'); render();
-  toast(state.editId ? '已更新' : '已添加', 'success');
-}
-
-async function delKey(id) {
-  if (!confirm('确认删除这条密钥？')) return;
-  state.keys = state.keys.filter(x => x.id !== id);
-  await save(); render();
-}
-
-function copyText(text) {
-  navigator.clipboard.writeText(text).then(() => toast('已复制', 'success')).catch(() => {
-    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('已复制', 'success');
-  });
-}
-
-// ================= 连通性测试 (多接口兼容) =================
-async function testKey(id) {
-  const k = state.keys.find(x => x.id === id);
-  const base = (k.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '');
-  const urls = [`${base}/models`, `${base}/chat/completions`];
-  
-  document.getElementById('testResultBox').innerHTML = '<div style="text-align:center;color:var(--text2);">正在测试，请稍候...</div>';
-  document.getElementById('testModal').classList.add('show');
-
-  let success = false, msg = '';
-  for (let url of urls) {
-    try {
-      const res = await fetch(url, { 
-        method: 'GET', 
-        headers: { 'Authorization': `Bearer ${k.key}` },
-        signal: AbortSignal.timeout(6000) 
-      });
-      if (res.ok || res.status === 401 || res.status === 403 || res.status === 404) {
-        success = true; msg = `接口可达 (HTTP ${res.status})`; break;
-      }
-    } catch (e) { msg = '网络超时或无法连接'; }
+    appState.sites.push(entry);
   }
   
-  k.tested = success;
-  await save(); render();
-  
-  document.getElementById('testResultBox').innerHTML = success 
-    ? `<div style="color:var(--success);text-align:center;font-size:16px;">✅ 测试通过<br><span style="font-size:12px;color:var(--text2)">${msg}</span></div>`
-    : `<div style="color:var(--danger);text-align:center;font-size:16px;">❌ 测试失败<br><span style="font-size:12px;color:var(--text2)">${msg}</span></div>`;
+  await saveState(); closeModal(); renderList();
+  refreshAllBalances(); // 保存后自动刷新
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+async function deleteSite(id) {
+  if (!confirm('确认删除此站点配置？')) return;
+  appState.sites = appState.sites.filter(s => s.id !== id);
+  await saveState(); renderList(); refreshAllBalances();
+}
 
-// ================= 导入导出 =================
-function exportData() {
-  if (!state.keys.length) return toast('没有数据可导出', 'error');
-  const blob = new Blob([JSON.stringify(state.keys, null, 2)], {type:'application/json'});
+function closeModal() { document.getElementById('editModal').classList.remove('show'); }
+
+// ================= 导出与备份 =================
+async function exportVault() {
+  if (!appState.sites.length) return toast('没有数据');
+  // 导出时依然使用主密码加密，确保即使文件泄露，无密码也打不开
+  const content = JSON.stringify(appState.sites);
+  const encryptedBlob = await encryptStr(content, appState.pwd);
+  
+  const blob = new Blob([encryptedBlob], {type: 'text/plain'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `AI-Keys-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `Vault_Backup_${new Date().toISOString().slice(0,10)}.vault`;
   a.click();
-  toast('备份已下载', 'success');
+  toast('加密备份已下载');
 }
 
-function importData(e) {
-  const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async (ev) => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if (!Array.isArray(data)) throw new Error();
-      const exist = new Set(state.keys.map(k => k.platform.toLowerCase()));
-      let addCount = 0;
-      data.forEach(k => {
-        if (!exist.has(k.platform.toLowerCase()) && k.platform && k.key) {
-          state.keys.push({ ...k, id: Date.now().toString(36)+Math.random().toString(36).slice(2,5) });
-          addCount++;
-        }
-      });
-      await save(); render();
-      toast(`成功导入 ${addCount} 条`, 'success');
-    } catch { toast('导入失败：文件格式错误', 'error'); }
-  };
-  reader.readAsText(file); e.target.value = '';
+// ================= 工具函数 =================
+function escapeHtml(str) { return str ? str.replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])) : ''; }
+function maskKey(key) { return key.length > 10 ? key.slice(0,6) + '••••' + key.slice(-4) : key; }
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => toast('已复制')).catch(() => toast('复制失败'));
 }
-
-// ================= Toast =================
-function toast(msg, type = 'info') {
+function toast(msg) {
   const box = document.getElementById('toastBox');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = (type === 'success' ? '✅ ' : type === 'error' ? '❌ ' : 'ℹ️ ') + msg;
-  box.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2500);
+  const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg;
+  box.appendChild(el); setTimeout(() => el.remove(), 2500);
 }
 
-// ================= 点击遮罩关闭弹窗 =================
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
+document.getElementById('editModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('editModal')) closeModal();
 });
-
-// ================= 初始化 =================
-window.onload = () => {
-  if (!localStorage.getItem('haoji_vault')) showCreate();
-};
 </script>
 </body>
 </html>
