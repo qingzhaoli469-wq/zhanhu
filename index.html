@@ -204,8 +204,8 @@ async function saveState() {
   localStorage.setItem('haoji_vault_pro', await encryptStr(JSON.stringify(appState.sites), appState.pwd));
 }
 
-// ================= 核心：专属代理地址 =================
-const MY_PROXY = 'https://zhanhui.qingzhaoli469.workers.dev'; 
+// ================= 核心：已填入你的专属代理地址 =================
+const MY_PROXY = 'https://zhanhu1.qingzhaoli469.workers.dev'; 
 const PROXIES = [
   url => `${MY_PROXY}?url=${encodeURIComponent(url)}`, // 优先走你的专属极速通道
   url => `https://corsproxy.io/?${encodeURIComponent(url)}`, // 备用节点
@@ -213,15 +213,24 @@ const PROXIES = [
 ];
 
 async function fetchWithProxy(targetUrl, headers) {
-  for (let proxyFn of PROXIES) {
+  let errors = [];
+  for (let i = 0; i < PROXIES.length; i++) {
     try {
-      const res = await fetch(proxyFn(targetUrl), { headers });
+      const proxyUrl = PROXIES[i](targetUrl);
+      const res = await fetch(proxyUrl, { headers });
+      
       if (res.ok) return await res.json();
+      
       if (res.status === 401 || res.status === 403) throw new Error(`HTTP ${res.status} (API Key 无效或无权限)`);
-      if (res.status === 404) throw new Error(`HTTP 404 (该站未开放查额接口)`);
-    } catch(e) { if(e.message.includes('401')) throw e; continue; }
+      if (res.status === 404) throw new Error(`HTTP 404 (该站未开放查额接口或路径不对)`);
+      
+      errors.push(`节点${i+1}状态码:${res.status}`);
+    } catch(e) { 
+      if(e.message.includes('401') || e.message.includes('404')) throw e;
+      errors.push(`节点${i+1}: ${e.message}`); 
+    }
   }
-  throw new Error('代理请求失败或超时');
+  throw new Error(`查询失败 [${errors.join(' | ')}]`);
 }
 
 async function queryBalance(site) {
@@ -232,29 +241,30 @@ async function queryBalance(site) {
   } else if (site.provider === 'siliconflow') {
     url = 'https://api.siliconflow.cn/v1/user/info';
   } else if (site.provider === 'newapi') {
-    // 中转站通用查额接口
+    // 中转站通用查额接口 (根据 NewAPI/OneAPI 框架)
     url = site.baseUrl.replace(/\/+$/, '') + '/api/user/self'; 
   }
 
   const data = await fetchWithProxy(url, headers);
   let balance = 0; let currency = 'CNY';
 
-  if (site.provider === 'deepseek') {
-    balance = parseFloat(data.balance_infos[0].total_balance); currency = data.balance_infos[0].currency;
-  } else if (site.provider === 'siliconflow') {
-    balance = parseFloat(data.data.totalBalance);
-  } else if (site.provider === 'newapi') {
-    // 解析中转站通用格式
-    if (data.data && data.data.quota !== undefined) {
-      balance = (data.data.quota / 500000).toFixed(2); // 换算汇率
-    } else if (data.balance !== undefined) {
-      balance = parseFloat(data.balance);
-    } else {
-      throw new Error('返回格式不兼容，可能未开放 API 查额。');
+  try {
+    if (site.provider === 'deepseek') {
+      balance = parseFloat(data.balance_infos[0].total_balance); currency = data.balance_infos[0].currency;
+    } else if (site.provider === 'siliconflow') {
+      balance = parseFloat(data.data.totalBalance);
+    } else if (site.provider === 'newapi') {
+      if (data.data && data.data.quota !== undefined) {
+        balance = (data.data.quota / 500000).toFixed(2); // 换算汇率 (50万 = 1美元/1元)
+      } else if (data.balance !== undefined) {
+        balance = parseFloat(data.balance);
+      } else {
+        throw new Error('返回格式不兼容，该站可能关闭了 API 查额。原始数据: ' + JSON.stringify(data).slice(0, 20));
+      }
     }
-  }
+  } catch(e) { throw new Error('解析数据失败: ' + JSON.stringify(data).slice(0, 30)); }
 
-  if (isNaN(balance)) throw new Error('解析出的余额不是数字');
+  if (isNaN(balance)) throw new Error('解析出的余额不是有效数字');
   return { balance, currency };
 }
 
